@@ -1,4 +1,14 @@
-﻿namespace sligoRain
+﻿//
+//
+// This is a basic solution that will:
+//
+// (i) read in  the rainfall records from a file,
+// (ii) count the number in each specified band,
+// (iii) if it rained, add to the count for the weekday on which it rained, and to the total rain on that day
+// (iv) print reports on the bands and the weekdays.
+//
+//
+namespace sligoRain
 {
     internal class Program
     {
@@ -19,7 +29,6 @@
 
             int[] dayCounts = new int[7];
             double[] dayAmounts = new double[7];
-            string[] days = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 
 
             using (StreamReader sr = File.OpenText(path))
@@ -43,9 +52,9 @@
 
                         if (rain > 0)  // there has been rain on that day
                         {
-                            index = Array.IndexOf(days, date.DayOfWeek.ToString());
-                            dayCounts[index]++;        // add times it rained on that day
-                            dayAmounts[index] += rain; // add amounts it rained on that day
+                            index = (int) date.DayOfWeek;   // day of week is 0..6. 
+                            dayCounts[index]++;             // add times it rained on that day
+                            dayAmounts[index] += rain;      // add amounts it rained on that day
                         }
 
 
@@ -59,7 +68,7 @@
 
                 // Print Reports
 
-                DayRainReport(dayCounts,days,dayAmounts);
+                DayRainReport(dayCounts,dayAmounts);
 
                 OverallRainReport(bandCounts, bandBoundaries);
 
@@ -68,21 +77,23 @@
           
         }
 
-        static void DayRainReport(int[] dayCounts, string[] days, double[] dayAmounts)
+        static void DayRainReport(int[] dayCounts, double[] dayAmounts)
         {
                 Console.WriteLine($"\n\n{"Day",-20} {"Times Raining",-20}\t\t{"Amount of Rain",-20}\n");
 
-                // report on rainfall in each day of week.
+                // report on rainfall for each day of the week.
 
-                for (int i = 0; i < days.Length; i++)
+                for (int i = 0; i < dayCounts.Length; i++)
                 {
-                    Console.WriteLine($"{days[i],-20}\t\t{dayCounts[i],-20}\t\t{dayAmounts[i],-20:F2}");
+                    Console.WriteLine($"{Enum.GetName(typeof(DayOfWeek), i), -20}\t\t{dayCounts[i],-20}\t\t{dayAmounts[i],-20:F2}");
 
                 }
 
         }
-
-
+// 
+// This method gets the band index. Note that the numbers here are hard coded.
+// Think of ways that you could write this method to allow more flexibility in bands.
+//
             static int GetRainBandIndex(double rain)
             {
                 switch (rain)
@@ -95,12 +106,16 @@
                     default: return -1;
                 }
             }
-
-
+//
+// This method makes the assumption that the lower band boundary is the lowest value
+// that rainfall can take (here 0). How would you alter this for a metric like temperature which
+// could have values <0 and also values > the highest band boundary?
+//
             static void OverallRainReport(int[] bandCounts, int[] bandBoundaries)
             {
 
                 //Report on how many days rainfall in each band.
+
                 Console.WriteLine($"\n\nRain Report\n");
 
 
@@ -116,9 +131,3 @@
  
     }
 }
-/*
- * 
-          
- 
-
-     */
